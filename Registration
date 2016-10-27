@@ -1,0 +1,14 @@
+import requests
+import json
+def step1():
+    token = "94598b2a71ecc8d7e0ab752104ed8be9"
+    dct = {"token": token, "github": "https://github.com/dberumen/code2040-TechAssesment"}
+    postAPI = requests.post("http://challenge.code2040.org/api/register", json = dct)
+    print(postAPI.text)
+    return token
+def step2(token)
+  
+def main():
+    token = step1()
+    step2(token)
+main()
