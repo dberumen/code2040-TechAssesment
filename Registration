@@ -1,14 +1,117 @@
+'''
+Author: Dylan David Berumen
+Email: dberumen@ucsc.edu
+Purpose: Code2040 Techniacal Assesment for 2017 Fellows Program
+'''
+#importing the neccessary mmodules to complete the challenge
 import requests
 import json
+import iso8601
+import datetime
+'''
+This method completes step 1
+The method registers me to the challenge and returns
+the token given to me so that it can be used for other methods
+'''
 def step1():
+    #token given to me
     token = "94598b2a71ecc8d7e0ab752104ed8be9"
+    #dictionary is created to record the token and the github repository
     dct = {"token": token, "github": "https://github.com/dberumen/code2040-TechAssesment"}
+    #posts the dictionary to the registration endpoint
     postAPI = requests.post("http://challenge.code2040.org/api/register", json = dct)
     print(postAPI.text)
+    #returns the token
     return token
-def step2(token)
-  
+'''
+This method completes step 2
+The method reverses a string given to by the endpoint
+'''
+def step2(token):
+    #creates dictionary for my token
+    dct = {"token": token}
+    #gets the string from the endpoint
+    word = requests.post("http://challenge.code2040.org/api/reverse", json = dct)
+    #reverses the string
+    #posts the revesred string to the validation endpoint
+    rWord = word.text[::-1]
+    dct2 = {"token": token, "string": rWord}
+    postAPI = requests.post("http://challenge.code2040.org/api/reverse/validate", json = dct2)
+    print(postAPI.text)
+'''
+This method completes step 3
+The method identifies a string in an array and returns the position of that string
+'''
+def step3(token):
+    dct = {"token": token}
+    #gets the dictionary containing the array and the word
+    postIn = requests.post("http://challenge.code2040.org/api/haystack", json = dct)
+    dct2 = json.loads(postIn.text)
+    #gets the arrray in the dictionary
+    haystack = dct2["haystack"]
+    #finds the string in the array and records the position
+    for position in range(len(haystack)):
+        if haystack[position]==dct2["needle"]:
+            wPosition = position
+            break
+    #posts the position of the string to the endpoint
+    dct3 = {"token": token, "needle": wPosition}
+    postAPI = requests.post("http://challenge.code2040.org/api/haystack/validate", json = dct3)
+    print(postAPI.text)
+'''
+This method completes step 4
+The method returns an array of strings that do not create a certain prefix
+'''
+def step4(token):
+    dct = {"token": token}
+    #gets a dictionary containing the array and the prefix
+    postIn = requests.post("http://challenge.code2040.org/api/prefix", json = dct)
+    dct2 = json.loads(postIn.text)
+    #gets the array within the dictionary
+    wordArray = dct2["array"]
+    #creates a new arrray
+    newArray = []
+    #loops through each word in the array
+    for word in wordArray:
+        #checks to see if the word contains the prefix
+        if dct2["prefix"] not in word:
+            #if true the word is added to the new array
+            newArray.append(word)
+    #posts the array to the endpoint
+    dct3 = {"token": token, "array": newArray}
+    postAPI = requests.post("http://challenge.code2040.org/api/prefix/validate", json = dct3)
+    print(postAPI.text)
+'''
+This method completes step 5
+The method adds a time given in seconds to a datestamp
+'''
+def step5(token):
+    dct = {"token": token}
+    #gets the dictionary containing the datestamp and the time in seconds
+    postIn = requests.post("http://challenge.code2040.org/api/dating", json = dct)
+    dct2 = json.loads(postIn.text)
+    #gets the seconds and the date
+    seconds = dct2["interval"]
+    date = dct2["datestamp"]
+    #converts both seconds and datestamp so that it can be used and modified
+    time = datetime.timedelta(seconds = seconds)
+    conversion = iso8601.parse_date(date)
+    finalTime = conversion + time
+    #changes the date back to its original format
+    finalDate = finalTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+    #posts the datestamp to the endpoint
+    dct3 = {"token": token, "datestamp": finalDate}
+    postAPI = requests.post("http://challenge.code2040.org/api/dating/validate", json = dct3)
+    print(postAPI.text)
+'''
+This method is the main method
+It calls every method in the program
+'''
 def main():
     token = step1()
     step2(token)
+    step3(token)
+    step4(token)
+    step5(token)
+#main method being called
 main()
